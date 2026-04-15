@@ -1186,12 +1186,12 @@ function WhoSection({
               </div>
             )}
           </div>
-          <div className="flex items-center justify-center gap-3 pt-6 pb-2">
-            <span className="text-xs uppercase tracking-[0.06em] text-gray-400 font-semibold">or</span>
+          <div className="flex items-center justify-start gap-2 pt-5 pb-2">
+            <span className="text-xs text-gray-400">or</span>
             <button
               onClick={startAddNew}
-              className="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-4 py-1.5 rounded flex items-center text-sm font-medium">
-              <Plus className="w-3.5 h-3.5 mr-1.5" strokeWidth={2.5} /> Add a new submitter
+              className="border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 px-3 py-1 rounded flex items-center text-sm font-normal">
+              <Plus className="w-3.5 h-3.5 mr-1.5" strokeWidth={2.2} /> Add a new submitter
             </button>
           </div>
           {showRequiredErrors && requiredMessage('First name, last name, and notification preference are required')}
