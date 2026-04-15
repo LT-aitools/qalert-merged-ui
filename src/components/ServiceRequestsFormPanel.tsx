@@ -488,18 +488,19 @@ export function ServiceRequestsFormPanel({
                   </div>
                 </div>
 
+                {selectedRequestType && (
+                  <div className="mb-4 bg-amber-50 border border-amber-300 border-l-4 border-l-amber-500 rounded-sm px-3 py-2">
+                    <div className="text-xs font-semibold text-amber-800 mb-1">
+                      Prompts for: {selectedRequestType.name}
+                    </div>
+                    <div className="text-sm text-gray-800">
+                      <PromptContent requestType={selectedRequestType.name} />
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex gap-8 mb-4">
                   <div className="flex-1">
-                    {selectedRequestType && (
-                      <div className="mb-3 bg-amber-50 border border-amber-300 border-l-4 border-l-amber-500 rounded-sm px-3 py-2">
-                        <div className="text-xs font-semibold text-amber-800 mb-1">
-                          Prompts for: {selectedRequestType.name}
-                        </div>
-                        <div className="text-sm text-gray-800">
-                          <PromptContent requestType={selectedRequestType.name} />
-                        </div>
-                      </div>
-                    )}
                     <div className="flex justify-between items-center mb-1">
                       <label className="text-sm text-gray-700">Comments<span className="text-red-500">*</span></label>
                       <div className="flex items-center space-x-3">
