@@ -11,7 +11,6 @@ import {
   MapPin,
   Search,
   MessageCircle,
-  AlertCircle,
   Pencil,
   ChevronDown,
   ChevronRight,
@@ -179,7 +178,6 @@ export function ServiceRequestsFormPanel({
     name: string;
     breadcrumb: string;
   } | null>(() => findRequestTypeSelection(initialRequestType ?? ''));
-  const [promptsPanelOpen, setPromptsPanelOpen] = useState(false);
   const [knowledgeBaseOpen, setKnowledgeBaseOpen] = useState(false);
   const [knowledgeBaseKeyword, setKnowledgeBaseKeyword] = useState('');
   const [knowledgeBaseCategory, setKnowledgeBaseCategory] = useState('');
@@ -248,7 +246,6 @@ export function ServiceRequestsFormPanel({
     setKnowledgeBaseCategory(defaultCategory);
     setKnowledgeBaseKeyword('');
     setExpandedKnowledgeArticleId(null);
-    setPromptsPanelOpen(false);
     setCommentsOpen(false);
     setKnowledgeBaseOpen(true);
   }
@@ -493,19 +490,21 @@ export function ServiceRequestsFormPanel({
 
                 <div className="flex gap-8 mb-4">
                   <div className="flex-1">
+                    {selectedRequestType && (
+                      <div className="mb-3 bg-amber-50 border border-amber-300 border-l-4 border-l-amber-500 rounded-sm px-3 py-2">
+                        <div className="text-xs font-semibold text-amber-800 mb-1">
+                          Prompts for: {selectedRequestType.name}
+                        </div>
+                        <div className="text-sm text-gray-800">
+                          <PromptContent requestType={selectedRequestType.name} />
+                        </div>
+                      </div>
+                    )}
                     <div className="flex justify-between items-center mb-1">
                       <label className="text-sm text-gray-700">Comments<span className="text-red-500">*</span></label>
                       <div className="flex items-center space-x-3">
-                        {selectedRequestType &&
                         <button
-                          onClick={() => { setPromptsPanelOpen(true); setCommentsOpen(false); }}
-                          className="flex items-center gap-1.5 bg-amber-50 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-sm border border-amber-300 border-l-4 border-l-amber-500 hover:bg-amber-100">
-                            <AlertCircle className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                            Prompts for: {selectedRequestType.name}
-                          </button>
-                        }
-                        <button
-                          onClick={() => { setCommentsOpen(true); setPromptsPanelOpen(false); }}
+                          onClick={() => setCommentsOpen(true)}
                           className="text-green-600 text-xs flex items-center hover:underline">
                           <MessageCircle className="w-3 h-3 mr-1" /> Comments
                         </button>
@@ -522,7 +521,7 @@ export function ServiceRequestsFormPanel({
                     <div className="flex justify-between items-center mb-1">
                       <label className="text-sm text-gray-700">Private Notes</label>
                       <button
-                        onClick={() => { setCommentsOpen(true); setPromptsPanelOpen(false); }}
+                        onClick={() => setCommentsOpen(true)}
                         className="text-green-600 text-xs flex items-center hover:underline">
                         <MessageCircle className="w-3 h-3 mr-1" /> Comments
                       </button>
@@ -621,29 +620,6 @@ export function ServiceRequestsFormPanel({
                 </button>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Prompts Slide-in Panel */}
-        <div
-          className="w-[400px] bg-white border-l border-gray-300 shadow-xl flex flex-col shrink-0 z-30 absolute right-0 top-0 bottom-0"
-          style={{ transform: promptsPanelOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.2s ease' }}
-        >
-          <div className="bg-[#f0f0f0] border-b border-gray-300 px-4 py-2 flex justify-between items-center h-10">
-            <h2 className="font-bold text-gray-800 text-lg">Prompts</h2>
-            <button
-              onClick={() => setPromptsPanelOpen(false)}
-              className="text-gray-400 hover:text-gray-600 bg-gray-200 hover:bg-gray-300 rounded p-0.5">
-              <X className="w-4 h-4" strokeWidth={3} />
-            </button>
-          </div>
-
-          <div className="p-6 overflow-y-auto">
-            {selectedRequestType ? (
-              <PromptContent requestType={selectedRequestType.name} />
-            ) : (
-              <div className="text-sm text-gray-400">Select a request type to see prompts.</div>
-            )}
           </div>
         </div>
 
