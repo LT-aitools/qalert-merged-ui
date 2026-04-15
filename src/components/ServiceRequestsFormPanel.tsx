@@ -499,8 +499,9 @@ export function ServiceRequestsFormPanel({
                         {selectedRequestType &&
                         <button
                           onClick={() => { setPromptsPanelOpen(true); setCommentsOpen(false); }}
-                          className="flex items-center gap-1 bg-sky-100 text-sky-700 text-xs font-semibold px-2 py-0.5 rounded hover:bg-sky-200">
-                            <AlertCircle className="w-3.5 h-3.5 fill-sky-500 text-white shrink-0" /> Prompts
+                          className="flex items-center gap-1.5 bg-amber-50 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-sm border border-amber-300 border-l-4 border-l-amber-500 hover:bg-amber-100">
+                            <AlertCircle className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                            Prompts for: {selectedRequestType.name}
                           </button>
                         }
                         <button
