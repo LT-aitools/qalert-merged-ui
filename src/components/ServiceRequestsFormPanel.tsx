@@ -1037,7 +1037,7 @@ function WhoSection({
   const [addMode, setAddMode] = useState(false);
   const [selected, setSelected] = useState<MockSubmitter | null>(null);
   const [isEditingSelected, setIsEditingSelected] = useState(false);
-  const [newForm, setNewForm] = useState({ firstName: '', lastName: '', mi: '', email: '', phone: '', phoneExt: '', altPhone: '', altPhoneExt: '', street: '', line2: '', city: 'Port St. Lucie', state: 'FL', zip: '', notifEmail: false, notifText: false, notifTextTo: 'Primary', notifCall: false, notifCallTo: 'Primary' });
+  const [newForm, setNewForm] = useState({ firstName: '', lastName: '', mi: '', email: '', phone: '', phoneExt: '', altPhone: '', altPhoneExt: '', street: '', line2: '', city: 'Port St. Lucie', state: 'FL', zip: '', notifEmail: false, notifText: false, notifTextTo: 'Primary', notifCall: false, notifCallTo: 'Primary', notifNone: false });
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const q = query.toLowerCase().trim();
@@ -1080,7 +1080,8 @@ function WhoSection({
       notifText: false,
       notifTextTo: 'Primary',
       notifCall: false,
-      notifCallTo: 'Primary'
+      notifCallTo: 'Primary',
+      notifNone: false,
     });
     setIsEditingSelected(false);
     setFocused(false);
@@ -1105,7 +1106,7 @@ function WhoSection({
     setAddMode(false);
     setIsEditingSelected(false);
     setQuery('');
-    setNewForm(f => ({ ...f, firstName: '', lastName: '', mi: '', email: '', phone: '', phoneExt: '', altPhone: '', altPhoneExt: '', street: '', line2: '', zip: '' }));
+    setNewForm(f => ({ ...f, firstName: '', lastName: '', mi: '', email: '', phone: '', phoneExt: '', altPhone: '', altPhoneExt: '', street: '', line2: '', zip: '', notifEmail: false, notifText: false, notifCall: false, notifNone: false }));
     if (emitChange) onSubmitterIdChange?.(null);
   }
 
@@ -1123,7 +1124,10 @@ function WhoSection({
   const readOnlyForm = !!selected && !addMode && !isEditingSelected;
   const firstNameValue = showSubmitterForm ? newForm.firstName : '';
   const lastNameValue = showSubmitterForm ? newForm.lastName : '';
-  const notifPrefMet = showSubmitterForm ? (newForm.notifEmail || newForm.notifText || newForm.notifCall) : false;
+  const hasDirectNotification = newForm.notifEmail || newForm.notifText || newForm.notifCall;
+  const notifPrefMet = showSubmitterForm ? (hasDirectNotification || newForm.notifNone) : false;
+  const noneDisabled = readOnlyForm || hasDirectNotification;
+  const directPreferenceDisabled = readOnlyForm || newForm.notifNone;
 
   useEffect(() => {
     onWhoRequiredChange?.({
@@ -1272,22 +1276,38 @@ function WhoSection({
 
               <div className="font-bold text-gray-800 text-sm pt-2">Notification Preferences<span className="text-red-500">*</span></div>
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input disabled={readOnlyForm} type="checkbox" checked={newForm.notifEmail} onChange={e => setNewForm(f => ({...f, notifEmail: e.target.checked}))} className="w-4 h-4" />
+                <input disabled={directPreferenceDisabled} type="checkbox" checked={newForm.notifEmail} onChange={e => setNewForm(f => ({...f, notifEmail: e.target.checked, notifNone: false}))} className="w-4 h-4" />
                 Email
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input disabled={readOnlyForm} type="checkbox" checked={newForm.notifText} onChange={e => setNewForm(f => ({...f, notifText: e.target.checked}))} className="w-4 h-4" />
+                <input disabled={directPreferenceDisabled} type="checkbox" checked={newForm.notifText} onChange={e => setNewForm(f => ({...f, notifText: e.target.checked, notifNone: false}))} className="w-4 h-4" />
                 Text Message to
-                <select disabled={readOnlyForm} value={newForm.notifTextTo} onChange={e => setNewForm(f => ({...f, notifTextTo: e.target.value}))} className="border border-gray-300 rounded px-2 py-0.5 text-sm outline-none disabled:bg-[#f8f8f8] disabled:text-gray-600 disabled:cursor-default">
+                <select disabled={directPreferenceDisabled} value={newForm.notifTextTo} onChange={e => setNewForm(f => ({...f, notifTextTo: e.target.value}))} className="border border-gray-300 rounded px-2 py-0.5 text-sm outline-none disabled:bg-[#f8f8f8] disabled:text-gray-600 disabled:cursor-default">
                   <option>Primary</option><option>Alternate</option>
                 </select>
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input disabled={readOnlyForm} type="checkbox" checked={newForm.notifCall} onChange={e => setNewForm(f => ({...f, notifCall: e.target.checked}))} className="w-4 h-4" />
+                <input disabled={directPreferenceDisabled} type="checkbox" checked={newForm.notifCall} onChange={e => setNewForm(f => ({...f, notifCall: e.target.checked, notifNone: false}))} className="w-4 h-4" />
                 Phone Call to
-                <select disabled={readOnlyForm} value={newForm.notifCallTo} onChange={e => setNewForm(f => ({...f, notifCallTo: e.target.value}))} className="border border-gray-300 rounded px-2 py-0.5 text-sm outline-none disabled:bg-[#f8f8f8] disabled:text-gray-600 disabled:cursor-default">
+                <select disabled={directPreferenceDisabled} value={newForm.notifCallTo} onChange={e => setNewForm(f => ({...f, notifCallTo: e.target.value}))} className="border border-gray-300 rounded px-2 py-0.5 text-sm outline-none disabled:bg-[#f8f8f8] disabled:text-gray-600 disabled:cursor-default">
                   <option>Primary</option><option>Alternate</option>
                 </select>
+              </label>
+              <label className={`flex items-center gap-2 text-sm ${noneDisabled ? 'text-gray-400' : 'text-gray-700'} cursor-pointer`}>
+                <input
+                  disabled={noneDisabled}
+                  type="checkbox"
+                  checked={newForm.notifNone}
+                  onChange={e => setNewForm(f => ({
+                    ...f,
+                    notifNone: e.target.checked,
+                    notifEmail: e.target.checked ? false : f.notifEmail,
+                    notifText: e.target.checked ? false : f.notifText,
+                    notifCall: e.target.checked ? false : f.notifCall,
+                  }))}
+                  className="w-4 h-4"
+                />
+                None
               </label>
               {showRequiredErrors && !notifPrefMet && requiredMessage('At least one notification preference is required')}
             </div>

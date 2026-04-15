@@ -28,6 +28,12 @@ const EMPTY_FORM: Partial<Submitter> = {
     alternatePhone: false, alternateVoice: false, alternateText: false, alternateEmail: false,
   },
 };
+function getEmptyForm(): Partial<Submitter> {
+  return {
+    ...EMPTY_FORM,
+    notificationPrefs: { ...EMPTY_FORM.notificationPrefs! },
+  };
+}
 
 type MainTab = 'details' | 'search';
 type RelatedView = 'list' | 'map';
@@ -90,7 +96,7 @@ export function QAlertApp({ trainingTarget, freePanel }: QAlertAppProps) {
   const [mainTab, setMainTab]               = useState<MainTab>('details');
   const [formTab, setFormTab]               = useState<FormTab>('who');
   const [submitter, setSubmitter]           = useState<Submitter | null>(null);
-  const [formData, setFormData]             = useState<Partial<Submitter>>(EMPTY_FORM);
+  const [formData, setFormData]             = useState<Partial<Submitter>>(getEmptyForm());
   const [relatedView, setRelatedView]       = useState<RelatedView>('list');
   const [filterByType, setFilterByType]     = useState(true);
   const [filterBySub, setFilterBySub]       = useState(true);
@@ -103,7 +109,7 @@ export function QAlertApp({ trainingTarget, freePanel }: QAlertAppProps) {
   const [selectedAddress, setSelectedAddress] = useState('');
   // Keep a snapshot of the submitter for Save+Add (same person, new ticket)
   const [savedSubmitter, setSavedSubmitter] = useState<Submitter | null>(null);
-  const savedFormData                       = EMPTY_FORM;
+  const savedFormData                       = getEmptyForm();
   const [activeTicket, setActiveTicket]     = useState<RelatedRequest | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [missingFieldsDialogOpen, setMissingFieldsDialogOpen] = useState(false);
@@ -168,7 +174,8 @@ export function QAlertApp({ trainingTarget, freePanel }: QAlertAppProps) {
 
   function openBlankTicket() {
     activeTicketIdRef.current = null;
-    setFormData(EMPTY_FORM);
+    setMainTab('details');
+    setFormData(getEmptyForm());
     setSubmitter(null);
     setFormTab('who');
     setSelectedType('');
@@ -230,7 +237,7 @@ export function QAlertApp({ trainingTarget, freePanel }: QAlertAppProps) {
   function handleSave() {
     const req = buildRequest();
     setRelatedRequests([req]);
-    setFormData(EMPTY_FORM);
+    setFormData(getEmptyForm());
     setSubmitter(null);
     setSelectedType('');
     setSelectedAddress('');
@@ -247,11 +254,11 @@ export function QAlertApp({ trainingTarget, freePanel }: QAlertAppProps) {
     if (sid) {
       const found = mockSubmitters.find(s => s.id === sid) ?? null;
       setSubmitter(found);
-      setFormData(found ? { ...found } : EMPTY_FORM);
+      setFormData(found ? { ...found } : getEmptyForm());
       if (found) setRelatedRequests(mockTicketsBySubmitter[found.id] ?? []);
     } else {
       setSubmitter(null);
-      setFormData(EMPTY_FORM);
+      setFormData(getEmptyForm());
       setRelatedRequests([]);
     }
     setSelectedType(ticket.requestType);
